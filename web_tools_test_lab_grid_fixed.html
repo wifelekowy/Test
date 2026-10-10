@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Tools Test Lab</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#101218;color:#e9ecf1}
+header{background:#171a22;padding:25px;border-bottom:1px solid #2b303b}
+header h1{margin:0;font-size:28px} header p{margin:6px 0 0;color:#9da5b4}
+main{padding:25px;max-width:1200px;margin:auto}
+.status{display:inline-block;background:#18351f;color:#70e58a;padding:7px 12px;border-radius:20px;font-size:13px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:#181c24;border:1px solid #2b303b;border-radius:12px;padding:18px}
+.card h2{margin-top:0;font-size:20px}.card p{color:#9da5b4}
+button{background:#303746;color:#e9ecf1;border:none;padding:10px 14px;border-radius:7px;cursor:pointer;margin-top:8px}
+button:hover{background:#3b4456}
+input{background:#0f1218;color:#e9ecf1;border:1px solid #353b48;padding:9px;border-radius:6px;width:100%;box-sizing:border-box;margin-top:6px}
+.result{margin-top:12px;color:#9da5b4;word-break:break-word}.counter{font-size:30px;font-weight:bold;margin:12px 0}
+.tool-link{display:inline-block;background:#303746;color:#e9ecf1;text-decoration:none;padding:10px 14px;border-radius:7px;margin-top:8px}
+.tool-link:hover{background:#3b4456}
+#cpsButton{width:100%;height:90px;font-size:24px;font-weight:bold;user-select:none}
+#cpsCountdown{text-align:center;font-size:18px;font-weight:bold;margin-top:10px;color:#9da5b4}
+.cps-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+.cps-modal-content{background:#181c24;border:1px solid #2b303b;border-radius:12px;padding:25px;width:min(360px,100%);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.cps-modal-content h2{margin-top:0}
+.cps-big-result{font-size:42px;font-weight:bold;margin:18px 0}
+#reactionBox{background:#303746;padding:30px;border-radius:8px;text-align:center;cursor:pointer;margin-top:10px;transition:background .15s}#reactionBox.waiting{background:#8f3030}#reactionBox.ready{background:#2f8f4e}
+footer{text-align:center;color:#697180;padding:25px}
+
+</style>
+
+<style>
+#coordinateButton{
+  width:100%;
+  height:120px;
+  font-size:18px;
+}
+</style>
+
+
+<style>
+.piano{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin-top:4px}
+.piano-key{min-width:0;height:95px;padding:8px 2px;background:#e9ecf1;color:#101218;border:1px solid #c8ccd4;border-radius:0 0 8px 8px;font-weight:bold;font-size:16px;cursor:pointer}
+.piano-key:hover{background:#fff}
+.piano-key:active{transform:translateY(2px);background:#d7dbe2}
+@media(max-width:600px){.piano{gap:3px}.piano-key{height:80px;font-size:14px}}
+</style>
+
+</head>
+<body>
+<header><h1>Web Tools Test Lab</h1><p>Mały zestaw narzędzi do testowania funkcji przeglądarki</p></header>
+<main>
+<div class="status">● SYSTEM ONLINE</div>
+<div class="grid">
+
+<section class="card"><h2>🕒 Clock Test</h2><p>Aktualny czas systemowy.</p><div class="counter" id="clock">00:00:00</div></section>
+
+<section class="card"><h2>🖱️ CPS Test</h2><p>Klikaj jak najszybciej przez 5 sekund.</p><div class="counter" id="cpsDisplay">0.00 CPS</div><button id="cpsButton" onclick="cpsClick()">CLICK!</button><div id="cpsCountdown">Ready</div><div class="result" id="cpsResult">Click to start.</div></section>
+
+<section class="card"><h2>🎲 Random Number</h2><p>Losowanie liczby od 1 do podanej wartości.</p><input id="maxNumber" type="number" placeholder="Maximum"><button onclick="randomNumber()">Generate</button><div class="result" id="randomResult">-</div></section>
+
+<section class="card"><h2>🧮 Quick Calculator</h2><p>Podstawowe działania matematyczne.</p><input id="num1" type="number" placeholder="First number"><input id="num2" type="number" placeholder="Second number"><button onclick="calculate('+')">+</button><button onclick="calculate('-')">-</button><button onclick="calculate('*')">×</button><button onclick="calculate('/')">÷</button><div class="result" id="calcResult">-</div></section>
+
+<section class="card"><h2>🌐 Browser Test</h2><p>Informacje o przeglądarce i urządzeniu.</p><button onclick="browserTest()">Run Test</button><div class="result" id="browserResult">-</div></section>
+
+<section class="card"><h2>🔗 External Link Test</h2><p>Test otwierania zewnętrznych materiałów w nowej karcie.</p><a class="tool-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Open test resource</a></section>
+
+<section class="card"><h2>⏱️ Stopwatch</h2><p>Prosty stoper.</p><div class="counter" id="stopwatch">00:00:00.00</div><button onclick="startStopwatch()">Start</button><button onclick="stopStopwatch()">Stop</button><button onclick="resetStopwatch()">Reset</button></section>
+
+<section class="card"><h2>🔐 Password Generator</h2><p>Losowe hasło.</p><input id="passwordLength" type="number" value="16" min="1" max="100" placeholder="Length"><button onclick="generatePassword()">Generate</button><div class="result" id="passwordResult">-</div></section>
+
+<section class="card"><h2>🌡️ Temperature Converter</h2><p>Konwersja temperatury.</p><input id="temperature" type="number" placeholder="Temperature"><button onclick="celsiusToFahrenheit()">°C → °F</button><button onclick="fahrenheitToCelsius()">°F → °C</button><div class="result" id="temperatureResult">-</div></section>
+
+<section class="card">
+  <h2>⌨️ Keyboard Test</h2>
+  <p>Naciśnij dowolny klawisz na klawiaturze.</p>
+  <div class="result" id="keyboardResult">Naciśnij dowolny klawisz…</div>
+</section>
+
+<section class="card"><h2>⚡ Reaction Test</h2><p>Sprawdź swój czas reakcji.</p><div id="reactionBox" onclick="reactionClick()">Click to start</div><div class="result" id="reactionResult">-</div></section>
+
+<section class="card"><h2>🎨 Color Generator</h2><p>Losowy kolor RGB.</p><button onclick="generateColor()">Generate Color</button><div id="colorPreview" style="width:100%;height:70px;margin-top:12px;border-radius:8px;border:1px solid #353b48;background:#101218"></div><div class="result" id="colorResult">RGB color will appear here.</div></section>
+
+<section class="card">
+  <h2>📐 Viewport Resizer Info</h2>
+  <p>Pokazuje aktualny rozmiar obszaru strony i aktualizuje go przy zmianie okna.</p>
+  <button onclick="updateViewportInfo()">Refresh Size</button>
+  <div class="result" id="viewportInfo">Viewport: -- × --</div>
+</section>
+
+<section class="card">
+  <h2>🎹 Simple Piano</h2>
+  <p>Proste pianino do testowania dźwięku.</p>
+  <div class="piano">
+    <button class="piano-key" data-note="261.63" type="button">C</button>
+    <button class="piano-key" data-note="293.66" type="button">D</button>
+    <button class="piano-key" data-note="329.63" type="button">E</button>
+    <button class="piano-key" data-note="349.23" type="button">F</button>
+    <button class="piano-key" data-note="392.00" type="button">G</button>
+    <button class="piano-key" data-note="440.00" type="button">A</button>
+    <button class="piano-key" data-note="493.88" type="button">B</button>
+    <button class="piano-key" data-note="523.25" type="button">C</button>
+  </div>
+  <div class="result" id="audioResult">Kliknij klawisz.</div>
+</section>
+
+<section class="card">
+  <h2>🎯 Click Coordinate Test</h2>
+  <p>Kliknij przycisk, aby sprawdzić współrzędne kliknięcia.</p>
+  <button id="coordinateButton">CLICK HERE</button>
+  <div class="result" id="coordinateResult">X: --, Y: --</div>
+</section>
+
+</div>
+
+<div class="cps-modal" id="cpsModal">
+    <div class="cps-modal-content">
+        <h2>🖱️ CPS Test — wynik</h2>
+        <div class="cps-big-result" id="cpsFinalResult">0.00 CPS</div>
+        <div class="result" id="cpsFinalDetails">0 clicks in 5 seconds.</div>
+        <button onclick="closeCPSModal()">Close</button>
+    </div>
+</div>
+
+</main>
+
+
+
+<footer>Web Tools Test Lab • Local browser testing page</footer>
+<script>
+function updateClock(){const now=new Date();document.getElementById("clock").textContent=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+":"+String(now.getSeconds()).padStart(2,"0")}updateClock();setInterval(updateClock,1000);
+
+let cpsClicks=0,cpsStartTime=0,cpsRunning=false,cpsTimer=null,cpsCountdownTimer=null;
+
+function cpsClick(){
+    if(!cpsRunning){
+        cpsRunning=true;
+        cpsClicks=0;
+        cpsStartTime=performance.now();
+
+        document.getElementById("cpsResult").textContent="GO!";
+        document.getElementById("cpsCountdown").textContent="5.00 s";
+
+        cpsTimer=setTimeout(endCPS,5000);
+
+        cpsCountdownTimer=setInterval(function(){
+            const remaining=Math.max(0,5000-(performance.now()-cpsStartTime));
+            document.getElementById("cpsCountdown").textContent=(remaining/1000).toFixed(2)+" s";
+            if(remaining<=0){
+                clearInterval(cpsCountdownTimer);
+                cpsCountdownTimer=null;
+            }
+        },10);
+    }
+
+    if(!cpsRunning) return;
+
+    cpsClicks++;
+
+    const elapsed=(performance.now()-cpsStartTime)/1000;
+    const cps=cpsClicks/Math.max(elapsed,.001);
+
+    document.getElementById("cpsDisplay").textContent=cps.toFixed(2)+" CPS";
+}
+
+function endCPS(){
+    if(!cpsRunning) return;
+
+    cpsRunning=false;
+
+    if(cpsCountdownTimer!==null){
+        clearInterval(cpsCountdownTimer);
+        cpsCountdownTimer=null;
+    }
+
+    const cps=cpsClicks/5;
+
+    document.getElementById("cpsDisplay").textContent=cps.toFixed(2)+" CPS";
+    document.getElementById("cpsCountdown").textContent="Finished!";
+    document.getElementById("cpsResult").textContent="Test finished.";
+
+    document.getElementById("cpsFinalResult").textContent=cps.toFixed(2)+" CPS";
+    document.getElementById("cpsFinalDetails").textContent=
+        cpsClicks+" clicks in 5 seconds.";
+
+    document.getElementById("cpsModal").style.display="flex";
+
+    cpsTimer=null;
+}
+
+function closeCPSModal(){
+    document.getElementById("cpsModal").style.display="none";
+    document.getElementById("cpsResult").textContent="Click to start.";
+    document.getElementById("cpsCountdown").textContent="Ready";
+}
+
+function randomNumber(){const max=parseInt(document.getElementById("maxNumber").value);if(!max||max<1){document.getElementById("randomResult").textContent="Enter a valid maximum.";return}document.getElementById("randomResult").textContent="Generated: "+(Math.floor(Math.random()*max)+1)}
+
+function calculate(operation){const a=parseFloat(document.getElementById("num1").value),b=parseFloat(document.getElementById("num2").value);if(isNaN(a)||isNaN(b)){document.getElementById("calcResult").textContent="Enter both numbers.";return}if(operation==="/"&&b===0){document.getElementById("calcResult").textContent="Cannot divide by zero.";return}let result;if(operation==="+")result=a+b;if(operation==="-")result=a-b;if(operation==="*")result=a*b;if(operation==="/")result=a/b;document.getElementById("calcResult").textContent="Result: "+result}
+
+function browserTest(){const width=window.innerWidth,height=window.innerHeight,screenWidth=screen.width,screenHeight=screen.height,pixelRatio=window.devicePixelRatio,language=navigator.language,languages=navigator.languages?navigator.languages.join(", "):"Unknown",online=navigator.onLine?"Online":"Offline",cookies=navigator.cookieEnabled?"Enabled":"Disabled",cores=navigator.hardwareConcurrency||"Unknown",memory=navigator.deviceMemory?navigator.deviceMemory+" GB":"Unknown",platform=navigator.platform||"Unknown",userAgent=navigator.userAgent;document.getElementById("browserResult").innerHTML="<strong>Browser information</strong><br><br>Viewport: "+width+" × "+height+"<br>Screen: "+screenWidth+" × "+screenHeight+"<br>Pixel ratio: "+pixelRatio+"<br>Language: "+language+"<br>Languages: "+languages+"<br>Connection: "+online+"<br>Cookies: "+cookies+"<br>CPU cores: "+cores+"<br>Device memory: "+memory+"<br>Platform: "+platform+"<br><br><strong>User Agent:</strong><br>"+userAgent}
+
+let stopwatchStart=0,stopwatchElapsed=0,stopwatchTimer=null;
+
+function updateStopwatch(){
+ const elapsed=stopwatchElapsed+(stopwatchTimer!==null ? Date.now()-stopwatchStart : 0),
+       hundredths=Math.floor(elapsed%1000/10),
+       seconds=Math.floor(elapsed/1000)%60,
+       minutes=Math.floor(elapsed/60000)%60,
+       hours=Math.floor(elapsed/3600000);
+
+ document.getElementById("stopwatch").textContent=
+ String(hours).padStart(2,"0")+":"+
+ String(minutes).padStart(2,"0")+":"+
+ String(seconds).padStart(2,"0")+"."+
+ String(hundredths).padStart(2,"0");
+}
+
+function startStopwatch(){
+ if(stopwatchTimer!==null)return;
+ stopwatchStart=Date.now();
+ stopwatchTimer=setInterval(updateStopwatch,10);
+}
+
+function stopStopwatch(){
+ if(stopwatchTimer===null)return;
+ stopwatchElapsed+=Date.now()-stopwatchStart;
+ clearInterval(stopwatchTimer);
+ stopwatchTimer=null;
+ updateStopwatch();
+}
+
+function resetStopwatch(){
+ if(stopwatchTimer!==null){
+   clearInterval(stopwatchTimer);
+   stopwatchTimer=null;
+ }
+ stopwatchElapsed=0;
+ stopwatchStart=0;
+ document.getElementById("stopwatch").textContent="00:00:00.00";
+}
+
+function generatePassword(){const length=parseInt(document.getElementById("passwordLength").value),characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";let password="";for(let i=0;i<length;i++)password+=characters[Math.floor(Math.random()*characters.length)];document.getElementById("passwordResult").textContent=password}
+
+function celsiusToFahrenheit(){const c=parseFloat(document.getElementById("temperature").value);if(isNaN(c))return;document.getElementById("temperatureResult").textContent=c+" °C = "+((c*9/5)+32).toFixed(2)+" °F"}
+function fahrenheitToCelsius(){const f=parseFloat(document.getElementById("temperature").value);if(isNaN(f))return;document.getElementById("temperatureResult").textContent=f+" °F = "+((f-32)*5/9).toFixed(2)+" °C"}
+
+document.addEventListener("keydown",function(event){document.getElementById("keyboardResult").innerHTML="Key: <strong>"+event.key+"</strong><br>Code: "+event.code})
+
+let reactionState="idle",reactionStart=0,reactionTimeout=null;
+function reactionClick(){const box=document.getElementById("reactionBox"),result=document.getElementById("reactionResult");if(reactionState==="idle"){reactionState="waiting";box.className="waiting";box.textContent="Wait...";reactionTimeout=setTimeout(function(){reactionState="ready";reactionStart=performance.now();box.className="ready";box.textContent="CLICK NOW!"},Math.floor(Math.random()*3000)+1000);return}if(reactionState==="waiting"){clearTimeout(reactionTimeout);reactionState="idle";box.className="";box.textContent="Too early! Click to try again.";result.textContent="Too early.";return}const reaction=performance.now()-reactionStart;reactionState="idle";box.className="";box.textContent="Click to start";result.textContent="Reaction time: "+reaction.toFixed(0)+" ms"}
+
+function generateColor(){const r=Math.floor(Math.random()*256),g=Math.floor(Math.random()*256),b=Math.floor(Math.random()*256),rgb="rgb("+r+", "+g+", "+b+")";document.getElementById("colorResult").textContent=rgb;document.getElementById("colorPreview").style.background=rgb}
+
+function updateViewportInfo(){
+    document.getElementById("viewportInfo").textContent=
+        "Viewport: "+window.innerWidth+" × "+window.innerHeight+
+        " px";
+}
+updateViewportInfo();
+window.addEventListener("resize", updateViewportInfo);
+
+let pianoAudioContext=null;
+function playPianoNote(frequency){
+  try{
+    const AudioContext=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContext){document.getElementById("audioResult").textContent="Web Audio API not supported.";return;}
+    if(!pianoAudioContext||pianoAudioContext.state==="closed")pianoAudioContext=new AudioContext();
+    if(pianoAudioContext.state==="suspended")pianoAudioContext.resume();
+    const oscillator=pianoAudioContext.createOscillator();
+    const gain=pianoAudioContext.createGain();
+    const now=pianoAudioContext.currentTime;
+    oscillator.type="triangle";
+    oscillator.frequency.setValueAtTime(frequency,now);
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.exponentialRampToValueAtTime(0.32,now+0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+0.75);
+    oscillator.connect(gain);gain.connect(pianoAudioContext.destination);
+    oscillator.start(now);oscillator.stop(now+0.75);
+  }catch(error){document.getElementById("audioResult").textContent="Piano test failed.";}
+}
+document.querySelectorAll(".piano-key").forEach(function(key){
+  key.addEventListener("click",function(){
+    playPianoNote(Number(this.dataset.note));
+    document.getElementById("audioResult").textContent="Grasz: "+this.textContent;
+  });
+});
+
+document.getElementById("coordinateButton").addEventListener("click",function(event){
+    const rect=this.getBoundingClientRect();
+    const x=Math.round(event.clientX-rect.left);
+    const y=Math.round(event.clientY-rect.top);
+
+    document.getElementById("coordinateResult").textContent=
+        "X: "+x+" px, Y: "+y+" px";
+});
+
+
+
+
+
+
+
+/* KEYBOARD_TEST_SIMPLE_START */
+(function () {
+  const output = document.getElementById("keyboardResult");
+  if (!output) return;
+  window.addEventListener("keydown", function (e) {
+    const keyName = e.key === " " ? "Space" : e.key;
+    output.textContent = "Key: " + keyName +
+      " | Code: " + (e.code || "not provided") +
+      " | KeyCode: " + (e.keyCode || 0);
+  });
+})();
+/* KEYBOARD_TEST_SIMPLE_END */
+
+</script>
+</body>
+</html>
